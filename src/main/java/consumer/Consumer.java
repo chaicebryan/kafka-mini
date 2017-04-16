@@ -1,32 +1,30 @@
 package consumer;
 
-import data.Message;
 import data.Topic;
 
-public class Consumer extends Thread {
+public class Consumer<T> extends Thread {
 
-    private Topic topic;
+    private Topic<T> topic;
+    private int targetPartition;
 
     public Consumer(Topic topic) {
-       this.topic = topic;
+        this.topic = topic;
+        targetPartition = 0;
     }
 
-    private Message consume() {
-        return topic.release();
+    public Consumer(Topic topic, int targetPartition) {
+        this.topic = topic;
+        this.targetPartition = targetPartition;
+    }
+
+    private T consume(int partition) {
+        return topic.release(partition);
     }
 
     @Override
     public void run() {
        while (notInterrupted()) {
-           Message message = consume();
-
-           if (message == null) {
-               try {
-                   Thread.sleep(1000);
-               } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-               }
-           }
+           T message = consume(targetPartition);
        }
     }
 

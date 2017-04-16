@@ -1,24 +1,25 @@
 package data;
 
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Topic {
+public class Topic<T> {
 
     private String name;
-    private BlockingQueue<Message> blockingQueue;
+    private Map<Integer, Partition<T>> partitions;
 
-    public void accept(List<Message> messages) {
-        messages.parallelStream()
-                .forEach((message) -> accept(message));
+    public Topic() {
+        partitions = new HashMap<>();
     }
 
-    private void accept(Message message) {
-        blockingQueue.add(message);
+    public synchronized void accept(int partition, T message) {
+         partitions.get(partition)
+                 .enqueue(message);
     }
 
-    public Message release() {
-       return blockingQueue.remove();
+    public synchronized T release(int partition) {
+       return partitions.get(partition)
+               .dequeue();
     }
 
 }

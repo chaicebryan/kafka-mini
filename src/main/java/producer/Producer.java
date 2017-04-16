@@ -1,23 +1,17 @@
 package producer;
 
-import java.util.List;
-
-import data.Message;
 import data.Topic;
 
-public class Producer extends Thread {
+public class Producer<T> extends Thread {
 
-    private Topic topic;
-
-    public Producer() {
-    }
+    private Topic<T> topic;
 
     public Producer(Topic topic) {
         this.topic = topic;
     }
 
-    private void send(List<Message> messages) {
-        topic.accept(messages);
+    private void send(int partition, T message) {
+        topic.accept(partition, message);
     }
 
     @Override
