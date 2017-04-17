@@ -2,7 +2,7 @@ package producer;
 
 import data.Topic;
 
-public class Producer<T> extends Thread {
+public class Producer<T> {
 
     private Topic<T> topic;
 
@@ -10,15 +10,8 @@ public class Producer<T> extends Thread {
         this.topic = topic;
     }
 
-    private void send(int partition, T message) {
+    public void send(int partition, T message) {
         topic.accept(partition, message);
-    }
-
-    @Override
-    public void run() {
-        while (notInterrupted()) {
-
-        }
     }
 
     public boolean notInterrupted() {

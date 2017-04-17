@@ -19,28 +19,31 @@ public class Partition<T> {
    }
 
    public synchronized void enqueue(T message) {
-      while (capacityReached()) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-      }
-      records.add(message);
+       while (capacityReached()) {
+           try {
+               wait();
+           } catch (InterruptedException e) {
+               Thread.currentThread().interrupt();
+           }
+       }
+       records.add(message);
+       notifyAll();
    }
 
    public synchronized T dequeue() {
-      while (records.isEmpty()) {
-          System.out.println("Empty partition. Waiting....");
-          try {
-              wait();
-          } catch (InterruptedException e) {
-              Thread.currentThread().interrupt();
-          }
-      }
-      int lastIndex = records.size() - 1;
+       if (records.isEmpty()) {
+           System.out.println("Empty partition. Waiting....");
+           try {
+               wait();
+           } catch (InterruptedException e) {
+               Thread.currentThread().interrupt();
+           }
+       }
+       int lastIndex = records.size() - 1;
 
-      return records.remove(lastIndex);
+       T record = records.remove(lastIndex);
+       notifyAll();
+       return record;
    }
 
    private boolean capacityReached() {

@@ -23,9 +23,10 @@ public class Consumer<T> extends Thread {
 
     @Override
     public void run() {
-       while (notInterrupted()) {
-           T message = consume(targetPartition);
-       }
+        System.out.println("Starting consumer");
+        while (notInterrupted()) {
+            T message = consume(targetPartition);
+        }
     }
 
     public boolean notInterrupted() {

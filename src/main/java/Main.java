@@ -9,21 +9,21 @@ import producer.Producer;
 public class Main {
 
     public static void main(String[] args) {
-        List<Message<Integer>> messages = new ArrayList<>();
+        List<Message<Integer>> records = new ArrayList<>();
 
-        for (int i = 0; i < 2000; i++) {
-            messages.add(new Message<>(new Integer(22)));
+        for(int i = 0; i < 60000; i++) {
+            records.add(new Message<>(i));
         }
 
-        Topic topic = new Topic();
+        Topic<Message<Integer>> topic = new Topic<>(1, 100000);
 
-        Producer producer = new Producer(topic);
-        producer.start();
+        Consumer<Message<Integer>> recordConsumer1 = new Consumer<>(topic, 0);
+        recordConsumer1.start();
 
-        int numConsumers = 2;
+        Producer<Message<Integer>> recordProducer = new Producer<>(topic);
 
-        for (int i = 0; i < numConsumers; i++) {
-            new Consumer(topic).start();
+        for (Message message : records) {
+            recordProducer.send(0, message);
         }
 
     }
